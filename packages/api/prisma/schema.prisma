@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  nickname  String
+  avatar    String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  answers    UserAnswer[]
+  favorites  Favorite[]
+  notes      Note[]
+  exams      Exam[]
+  comments   Comment[]
+
+  @@map("users")
+}
+
+model Question {
+  id        String   @id @default(uuid())
+  type      String   // SINGLE_CHOICE, MULTI_CHOICE, FILL_BLANK, PROGRAMMING
+  title     String
+  content   String
+  options   Json?    // [{label, value}]
+  answer    String
+  analysis  String
+  difficulty String  // EASY, MEDIUM, HARD
+  tags      String[] // PostgreSQL array
+  testCases Json?    // [{input, expectedOutput}]
+  language  String?  // for programming questions
+  starterCode String? @map("starter_code")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  answers   UserAnswer[]
+  favorites Favorite[]
+  notes     Note[]
+  comments  Comment[]
+  exams     ExamQuestion[]
+
+  @@map("questions")
+}
+
+model UserAnswer {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  questionId String   @map("question_id")
+  userAnswer String   @map("user_answer")
+  isCorrect  Boolean  @map("is_correct")
+  timeSpent  Int      @default(0) @map("time_spent")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([questionId])
+  @@index([userId, questionId])
+  @@map("user_answers")
+}
+
+model Exam {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  title         String   @default("模拟考试")
+  questionCount Int      @map("question_count")
+  timeLimit     Int      @map("time_limit") // minutes
+  status        String   @default("NOT_STARTED") // NOT_STARTED, IN_PROGRESS, FINISHED
+  startedAt     DateTime? @map("started_at")
+  finishedAt    DateTime? @map("finished_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questions ExamQuestion[]
+
+  @@index([userId])
+  @@map("exams")
+}
+
+model ExamQuestion {
+  examId     String   @map("exam_id")
+  questionId String   @map("question_id")
+  order      Int
+  userAnswer String?  @map("user_answer")
+  isCorrect  Boolean? @map("is_correct")
+
+  exam     Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@id([examId, questionId])
+  @@map("exam_questions")
+}
+
+model Favorite {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  questionId String   @map("question_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+  @@index([userId])
+  @@map("favorites")
+}
+
+model Note {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  questionId String   @map("question_id")
+  content    String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+  @@index([userId])
+  @@map("notes")
+}
+
+model Comment {
+  id         String   @id @default(uuid())
+  questionId String   @map("question_id")
+  userId     String   @map("user_id")
+  nickname   String
+  avatar     String?
+  content    String
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+  @@map("comments")
+}

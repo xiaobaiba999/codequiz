@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "jsx": "react-jsx",
+    "lib": ["ES2020"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "noEmit": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@codequiz/types": ["../types/src"],
+      "@codequiz/types/*": ["../types/src/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "android", "ios"]
+}

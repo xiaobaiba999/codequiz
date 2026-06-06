@@ -1,0 +1,33 @@
+services:
+  # 后端 API 服务
+  - type: web
+    name: codequiz-api
+    runtime: node
+    plan: free
+    buildCommand: cd packages/api && npm install && npx prisma generate && npm run build
+    startCommand: cd packages/api && npx prisma migrate deploy && npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 7d
+      - key: JUDGE_SERVICE_URL
+        value: https://emkc.org/api/v2/piston
+      - key: JUDGE_SERVICE_TYPE
+        value: piston
+      - key: FRONTEND_URL
+        sync: false
+      - key: RUN_SEED
+        value: "true"

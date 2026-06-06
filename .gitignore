@@ -1,0 +1,33 @@
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+coverage/
+.tmp/
+packages/api/prisma/migrations/
+!packages/api/prisma/migrations/.gitkeep
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Build
+*.tsbuildinfo
+
+# React Native
+packages/mobile/android/.gradle/
+packages/mobile/android/app/build/
+packages/mobile/android/build/
+packages/mobile/ios/Pods/
+packages/mobile/ios/build/
+
+# Prisma
+packages/api/prisma/migrations/
+!packages/api/prisma/migrations/migration_lock.toml

@@ -1,0 +1,31 @@
+{
+  "name": "codequiz",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CodeQuiz - 跨平台刷题应用",
+  "scripts": {
+    "dev": "nx run-many --target=dev --parallel",
+    "dev:api": "nx run api:dev",
+    "dev:web": "nx run web:dev",
+    "dev:mobile": "nx run mobile:start",
+    "build": "nx run-many --target=build --parallel",
+    "build:api": "nx run api:build",
+    "build:web": "nx run web:build",
+    "lint": "nx run-many --target=lint --parallel",
+    "format": "prettier --write \"packages/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "db:migrate": "nx run api:db:migrate",
+    "db:seed": "nx run api:db:seed",
+    "db:studio": "nx run api:db:studio"
+  },
+  "devDependencies": {
+    "@nx/js": "^19.0.0",
+    "nx": "^19.0.0",
+    "typescript": "^5.4.0",
+    "prettier": "^3.2.0",
+    "eslint": "^8.57.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
