@@ -1,4 +1,7 @@
 {
-  "buildCommand": "bash build.sh",
-  "outputDirectory": "public"
+  "buildCommand": "bash build.sh && mkdir -p public && echo placeholder > public/index.html",
+  "outputDirectory": "public",
+  "builds": [
+    { "src": "api/ping.ts", "use": "@vercel/node" }
+  ]
 }
