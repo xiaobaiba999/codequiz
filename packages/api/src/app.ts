@@ -17,16 +17,44 @@ import statsRoutes from './routes/stats';
 import commentRoutes from './routes/comment';
 import userRoutes from './routes/user';
 
-export const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'production' ? ['warn', 'error'] : ['query', 'info', 'warn', 'error'],
+let _prisma: PrismaClient | null = null;
+let _redis: Redis | null = null;
+
+export function getPrisma(): PrismaClient {
+  if (!_prisma) {
+    _prisma = new PrismaClient({
+      log: process.env.NODE_ENV === 'production' ? ['warn', 'error'] : ['query', 'info', 'warn', 'error'],
+    });
+  }
+  return _prisma;
+}
+
+export function getRedis(): Redis {
+  if (!_redis) {
+    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+    _redis = new Redis(redisUrl, {
+      maxRetriesPerRequest: 3,
+      retryStrategy(times) {
+        const delay = Math.min(times * 200, 2000);
+        return delay;
+      },
+      lazyConnect: true,
+      connectTimeout: 5000,
+    });
+  }
+  return _redis;
+}
+
+// 兼容旧代码的导出
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_, prop) {
+    return (getPrisma() as any)[prop];
+  },
 });
 
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-export const redis = new Redis(redisUrl, {
-  maxRetriesPerRequest: 3,
-  retryStrategy(times) {
-    const delay = Math.min(times * 200, 2000);
-    return delay;
+export const redis = new Proxy({} as Redis, {
+  get(_, prop) {
+    return (getRedis() as any)[prop];
   },
 });
 
@@ -34,12 +62,6 @@ export function createApp() {
   const app = express();
 
   // CORS 配置
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    process.env.FRONTEND_URL,
-  ].filter(Boolean);
-
   app.use(cors({
     origin: true,
     credentials: true,
