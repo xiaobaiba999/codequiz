@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm exec prisma generate && mkdir -p public/api public/src && cp -r api/* public/api/ && cp -r src/* public/src/",
+  "buildCommand": "pnpm exec prisma generate && pnpm exec tsc --outDir public",
   "outputDirectory": "public",
   "rewrites": [
     { "source": "/(.*)", "destination": "/api/index" }
