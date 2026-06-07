@@ -41,7 +41,7 @@ export function createApp() {
   ].filter(Boolean);
 
   app.use(cors({
-    origin: allowedOrigins,
+    origin: true,
     credentials: true,
   }));
   app.use(express.json());
