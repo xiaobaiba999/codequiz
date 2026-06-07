@@ -2,6 +2,6 @@
   "buildCommand": "pnpm exec prisma generate && mkdir -p public && echo OK > public/index.html",
   "outputDirectory": "public",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index" }
+    { "source": "/((?!api/health).*)", "destination": "/api/index" }
   ]
 }
