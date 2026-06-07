@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/auth';
 
-// 生产环境使用 Cloudflare Worker 代理地址，开发环境使用本地地址
+// 生产环境使用自定义域名代理地址，开发环境使用本地地址
 const API_BASE = __DEV__
   ? 'http://10.0.2.2:3000/api' // Android 模拟器（iOS 用 localhost）
-  : 'https://codequiz-proxy.2927609408.workers.dev/api'; // 生产环境
+  : 'https://codequiz.liyaoyao.top/api'; // 生产环境
 
 const apiClient = axios.create({
   baseURL: API_BASE,
