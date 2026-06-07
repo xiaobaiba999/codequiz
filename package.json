@@ -18,8 +18,8 @@
     "db:studio": "nx run api:db:studio"
   },
   "devDependencies": {
-    "@nx/js": "^19.0.0",
-    "nx": "^19.0.0",
+    "@nx/js": "19.8.4",
+    "nx": "19.8.4",
     "typescript": "^5.4.0",
     "prettier": "^3.2.0",
     "eslint": "^8.57.0"
