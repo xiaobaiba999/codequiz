@@ -1,7 +1,4 @@
 {
   "buildCommand": "bash build.sh",
-  "outputDirectory": "public",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index" }
-  ]
+  "outputDirectory": "public"
 }
