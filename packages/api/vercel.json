@@ -1,4 +1,7 @@
 {
-  "framework": null,
-  "buildCommand": "pnpm exec prisma generate && echo \"exports.default=function(r,s){s.statusCode=200;s.setHeader('Content-Type','application/json');s.end(JSON.stringify({ok:true}))}\" > api/test.js"
+  "buildCommand": "pnpm exec prisma generate && mkdir -p public/api && echo \"exports.default=function(r,s){s.statusCode=200;s.setHeader('Content-Type','application/json');s.end(JSON.stringify({ok:true}))}\" > public/api/ping.js && echo \"exports.default=function(r,s){s.statusCode=500;s.end('index placeholder')}\" > public/api/index.js",
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api/index" }
+  ]
 }
