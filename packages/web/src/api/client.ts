@@ -1,8 +1,11 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/auth';
 
+// 生产环境直接请求 Vercel 后端 API，开发环境走 Vite 代理
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
+
 const apiClient = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE,
   timeout: 30000,
 });
 
@@ -23,7 +26,7 @@ apiClient.interceptors.response.use(
       const { refreshToken, logout } = useAuthStore.getState();
       if (refreshToken) {
         try {
-          const res = await axios.post('/api/auth/refresh', { refreshToken });
+          const res = await axios.post(`${API_BASE}/auth/refresh`, { refreshToken });
           useAuthStore.getState().setToken(res.data.data.accessToken);
           error.config.headers.Authorization = `Bearer ${res.data.data.accessToken}`;
           return apiClient(error.config);

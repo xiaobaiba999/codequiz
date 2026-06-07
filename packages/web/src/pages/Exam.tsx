@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Card, InputNumber, Button, Radio, message, Progress, Space, Tag } from 'antd';
+import { Card, InputNumber, Button, Radio, message, Progress, Space, Tag, Input } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { examApi, answerApi } from '../api';
+import { examApi } from '../api';
 
 const Exam: React.FC = () => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const Exam: React.FC = () => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [timeLeft, setTimeLeft] = useState(0);
   const [result, setResult] = useState<any>(null);
-  const timerRef = useRef<NodeJS.Timeout>();
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startExam = async () => {
     try {
@@ -37,19 +37,21 @@ const Exam: React.FC = () => {
       timerRef.current = setInterval(() => {
         setTimeLeft((t) => {
           if (t <= 1) {
-            clearInterval(timerRef.current);
+            if (timerRef.current) clearInterval(timerRef.current);
             submitExam();
             return 0;
           }
           return t - 1;
         });
       }, 1000);
-      return () => clearInterval(timerRef.current);
+      return () => {
+        if (timerRef.current) clearInterval(timerRef.current);
+      };
     }
-  }, [mode, timeLeft > 0]);
+  }, [mode]);
 
   const submitExam = async () => {
-    clearInterval(timerRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
     try {
       const answerList = Object.entries(answers).map(([questionId, userAnswer]) => ({
         questionId,
@@ -105,7 +107,7 @@ const Exam: React.FC = () => {
         <Card title={currentQ.title} style={{ marginTop: 16 }}>
           <div style={{ whiteSpace: 'pre-wrap', marginBottom: 16 }}>{currentQ.content}</div>
           {currentQ.type === 'SINGLE_CHOICE' && (
-            <Radio.Group value={answers[currentQ.id]} onChange={(e) => setAnswers({ ...answers, [currentQ.id]: e.target.value })}>
+            <Radio.Group value={answers[currentQ.id]} onChange={(e: any) => setAnswers({ ...answers, [currentQ.id]: e.target.value })}>
               <Space direction="vertical">
                 {currentQ.options?.map((opt: any) => (
                   <Radio key={opt.label} value={opt.label}>{opt.label}. {opt.value}</Radio>
@@ -114,7 +116,7 @@ const Exam: React.FC = () => {
             </Radio.Group>
           )}
           {currentQ.type === 'MULTI_CHOICE' && (
-            <Radio.Group value={answers[currentQ.id]} onChange={(e) => setAnswers({ ...answers, [currentQ.id]: e.target.value })}>
+            <Radio.Group value={answers[currentQ.id]} onChange={(e: any) => setAnswers({ ...answers, [currentQ.id]: e.target.value })}>
               <Space direction="vertical">
                 {currentQ.options?.map((opt: any) => (
                   <Radio key={opt.label} value={opt.label}>{opt.label}. {opt.value}</Radio>
@@ -126,7 +128,7 @@ const Exam: React.FC = () => {
             <Input.TextArea
               rows={4}
               value={answers[currentQ.id] || ''}
-              onChange={(e) => setAnswers({ ...answers, [currentQ.id]: e.target.value })}
+              onChange={(e: any) => setAnswers({ ...answers, [currentQ.id]: e.target.value })}
               placeholder={currentQ.type === 'PROGRAMMING' ? '请输入代码' : '请输入答案'}
             />
           )}
