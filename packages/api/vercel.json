@@ -1,3 +1,6 @@
 {
-  "buildCommand": "pnpm exec prisma generate"
+  "buildCommand": "pnpm exec prisma generate",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index" }
+  ]
 }
