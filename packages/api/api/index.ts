@@ -4,13 +4,12 @@ let app: any = null;
 
 async function getApp() {
   if (app) return app;
-  const { createApp } = await import('./src/app');
+  const { createApp } = await import('../src/app');
   app = createApp();
   return app;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // 处理 CORS preflight
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
