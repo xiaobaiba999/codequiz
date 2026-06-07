@@ -1,5 +1,10 @@
 import { Response } from 'express';
-import { ApiResponse } from '@codequiz/types';
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message: string;
+}
 
 export function success<T>(res: Response, data: T, message = '操作成功', statusCode = 200) {
   const response: ApiResponse<T> = { success: true, data, message };

@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Table, Input, Select, Tag, Button, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { questionApi } from '../api';
-import { QuestionType, Difficulty } from '@codequiz/types';
+
+// 题目类型和难度枚举
+type QuestionType = 'SINGLE_CHOICE' | 'MULTI_CHOICE' | 'FILL_BLANK' | 'PROGRAMMING';
+type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 
 const { Search } = Input;
 

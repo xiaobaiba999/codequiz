@@ -7,7 +7,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@codequiz/types': path.resolve(__dirname, '../types/src'),
     },
   },
   server: {

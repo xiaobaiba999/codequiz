@@ -10,7 +10,6 @@
     "lint": "eslint src/"
   },
   "dependencies": {
-    "@codequiz/types": "workspace:*",
     "antd": "^5.17.0",
     "@ant-design/icons": "^5.3.0",
     "axios": "^1.7.0",

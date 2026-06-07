@@ -13,10 +13,10 @@
     "db:migrate:prod": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "vercel-build": "prisma generate"
   },
   "dependencies": {
-    "@codequiz/types": "workspace:*",
     "@prisma/client": "^5.14.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",

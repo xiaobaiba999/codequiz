@@ -1,15 +1,9 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/[[...path]].ts",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/api/$1"
-    }
+  "framework": null,
+  "buildCommand": "npm install && npx prisma generate",
+  "installCommand": "npm install",
+  "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api" }
   ]
 }
