@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 const PISTON_API = process.env.JUDGE_SERVICE_URL || 'https://emkc.org/api/v2/piston';
 
 interface JudgeResult {
@@ -18,7 +16,6 @@ export async function executeCode(
   stdin: string = '',
 ): Promise<JudgeResult> {
   try {
-    // 语言映射到 Piston 的语言标识
     const languageMap: Record<string, string> = {
       python: 'python3',
       javascript: 'javascript',
@@ -28,14 +25,18 @@ export async function executeCode(
 
     const pistonLanguage = languageMap[language] || language;
 
-    const response = await axios.post(`${PISTON_API}/execute`, {
-      language: pistonLanguage,
-      version: '*',
-      files: [{ content: code }],
-      stdin,
-    }, { timeout: 10000 });
+    const response = await fetch(`${PISTON_API}/execute`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        language: pistonLanguage,
+        version: '*',
+        files: [{ content: code }],
+        stdin,
+      }),
+    });
 
-    const result = response.data;
+    const result = await response.json();
     return {
       success: result.run?.code === 0,
       output: result.run?.stdout || '',
@@ -44,7 +45,6 @@ export async function executeCode(
     };
   } catch (error: any) {
     console.error('[Judge Service] Error:', error.message);
-    // 外部服务不可用时返回 mock 结果
     return {
       success: false,
       output: '',
