@@ -9,6 +9,7 @@ import Practice from './pages/Practice';
 import Exam from './pages/Exam';
 import WrongBook from './pages/WrongBook';
 import Favorites from './pages/Favorites';
+import ImportQuestions from './pages/ImportQuestions';
 import Stats from './pages/Stats';
 import Profile from './pages/Profile';
 import { useAuthStore } from './store/auth';
@@ -41,6 +42,7 @@ const App: React.FC = () => {
         <Route path="favorites" element={<Favorites />} />
         <Route path="stats" element={<Stats />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="import" element={<ImportQuestions />} />
       </Route>
     </Routes>
   );

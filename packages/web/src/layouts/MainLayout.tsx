@@ -11,6 +11,7 @@ import {
   MenuOutlined,
   BulbOutlined,
   BulbFilled,
+  ImportOutlined,
 } from '@ant-design/icons';
 import { useThemeStore } from '../store/theme';
 import { useAuthStore } from '../store/auth';
@@ -26,6 +27,7 @@ const menuItems = [
   { key: '/favorites', icon: <HeartOutlined />, label: '收藏夹' },
   { key: '/stats', icon: <BarChartOutlined />, label: '学习统计' },
   { key: '/profile', icon: <UserOutlined />, label: '个人中心' },
+  { key: '/import', icon: <ImportOutlined />, label: '导入题库' },
 ];
 
 const MainLayout: React.FC = () => {
