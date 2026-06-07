@@ -1,9 +1,5 @@
 {
-  "framework": null,
-  "buildCommand": null,
-  "installCommand": "npm install && npx prisma generate",
-  "outputDirectory": ".",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/api" }
+    { "source": "/(.*)", "destination": "/api/index" }
   ]
 }
