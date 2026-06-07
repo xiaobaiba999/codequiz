@@ -66,10 +66,10 @@ export function getRedis(): IRedisLike {
 
   if (redisUrl) {
     console.log('[Redis] 使用外部 Redis 连接');
-    _client = new Redis(redisUrl, {
+    const redisClient = new Redis(redisUrl, {
       maxRetriesPerRequest: 2,
       retryStrategy(times) {
-        if (times > 3) return null; // 停止重试
+        if (times > 3) return null;
         return Math.min(times * 200, 2000);
       },
       lazyConnect: true,
@@ -77,10 +77,11 @@ export function getRedis(): IRedisLike {
       tls: redisUrl.startsWith('rediss://') ? {} : undefined,
     });
 
-    // 静默连接错误
-    (_client as Redis).on('error', (err: Error) => {
+    redisClient.on('error', (err: Error) => {
       console.warn('[Redis] 连接错误:', err.message);
     });
+
+    _client = redisClient as unknown as IRedisLike;
   } else {
     console.log('[Redis] REDIS_URL 未设置，使用内存存储（重启后数据丢失）');
     _client = new MemoryRedis();

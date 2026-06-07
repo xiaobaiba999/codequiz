@@ -60,15 +60,15 @@ async function calculateStreakDays(userId: string): Promise<number> {
 
   if (answers.length === 0) return 0;
 
-  const dates = [...new Set(answers.map(a => a.createdAt.toISOString().split('T')[0]))];
+  const dates: string[] = [...new Set(answers.map(a => a.createdAt.toISOString().split('T')[0]))];
   let streak = 1;
   const today = new Date().toISOString().split('T')[0];
 
   if (dates[0] !== today) return 0;
 
   for (let i = 1; i < dates.length; i++) {
-    const prev = new Date(dates[i - 1]);
-    const curr = new Date(dates[i]);
+    const prev = new Date(dates[i - 1] as string);
+    const curr = new Date(dates[i] as string);
     const diff = (prev.getTime() - curr.getTime()) / (1000 * 60 * 60 * 24);
 
     if (Math.floor(diff) === 1) {

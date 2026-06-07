@@ -36,7 +36,7 @@ export async function executeCode(
       }),
     });
 
-    const result = await response.json();
+    const result: any = await response.json();
     return {
       success: result.run?.code === 0,
       output: result.run?.stdout || '',

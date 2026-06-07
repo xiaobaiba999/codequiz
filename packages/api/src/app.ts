@@ -3,6 +3,7 @@ dotenv.config();
 
 import express from 'express';
 import cors from 'cors';
+// @ts-ignore - Prisma client generated at build time
 import { PrismaClient } from '@prisma/client';
 import { getRedis } from './config/redis';
 import { setupSwagger } from './config/swagger';
