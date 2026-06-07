@@ -1,8 +1,13 @@
 {
-  "framework": null,
-  "installCommand": "npm install",
-  "buildCommand": "prisma generate",
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm exec prisma generate",
   "rewrites": [
     { "source": "/(.*)", "destination": "/api/index" }
-  ]
+  ],
+  "functions": {
+    "api/index.ts": {
+      "runtime": "@vercel/node@3",
+      "maxDuration": 30
+    }
+  }
 }

@@ -4,7 +4,7 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
-import Redis from 'ioredis';
+import { getRedis } from './config/redis';
 import { setupSwagger } from './config/swagger';
 import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './routes/auth';
@@ -18,7 +18,6 @@ import commentRoutes from './routes/comment';
 import userRoutes from './routes/user';
 
 let _prisma: PrismaClient | null = null;
-let _redis: Redis | null = null;
 
 export function getPrisma(): PrismaClient {
   if (!_prisma) {
@@ -29,22 +28,6 @@ export function getPrisma(): PrismaClient {
   return _prisma;
 }
 
-export function getRedis(): Redis {
-  if (!_redis) {
-    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-    _redis = new Redis(redisUrl, {
-      maxRetriesPerRequest: 3,
-      retryStrategy(times) {
-        const delay = Math.min(times * 200, 2000);
-        return delay;
-      },
-      lazyConnect: true,
-      connectTimeout: 5000,
-    });
-  }
-  return _redis;
-}
-
 // 兼容旧代码的导出
 export const prisma = new Proxy({} as PrismaClient, {
   get(_, prop) {
@@ -52,7 +35,7 @@ export const prisma = new Proxy({} as PrismaClient, {
   },
 });
 
-export const redis = new Proxy({} as Redis, {
+export const redis = new Proxy({} as ReturnType<typeof getRedis>, {
   get(_, prop) {
     return (getRedis() as any)[prop];
   },
