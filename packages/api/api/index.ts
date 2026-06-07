@@ -1,13 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
+import { createApp } from '../src/app';
 
-let app: any = null;
-
-async function getApp() {
-  if (app) return app;
-  const { createApp } = await import('../src/app');
-  app = createApp();
-  return app;
-}
+const app = createApp();
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
   if (req.method === 'OPTIONS') {
@@ -21,9 +15,8 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   }
 
   try {
-    const expressApp = await getApp();
     await new Promise<void>((resolve, reject) => {
-      expressApp(req, res, (err: any) => {
+      app(req, res, (err: any) => {
         if (err) reject(err);
         else resolve();
       });

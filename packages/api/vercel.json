@@ -1,10 +1,9 @@
 {
   "buildCommand": "pnpm exec prisma generate",
   "builds": [
-    { "src": "api/index.ts", "use": "@vercel/node" },
-    { "src": "api/health.ts", "use": "@vercel/node" }
+    { "src": "api/index.ts", "use": "@vercel/node" }
   ],
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index" }
+    { "source": "/(.*)", "destination": "/api/index" }
   ]
 }
