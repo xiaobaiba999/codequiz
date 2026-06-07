@@ -2,6 +2,7 @@
   "buildCommand": "bash build.sh",
   "outputDirectory": "public",
   "rewrites": [
+    { "source": "/api/((?!test$|ping$).*)", "destination": "/api/index" },
     { "source": "/(.*)", "destination": "/api/index" }
   ],
   "functions": {
@@ -11,6 +12,9 @@
     },
     "api/ping.ts": {
       "memory": 128
+    },
+    "api/test.ts": {
+      "memory": 256
     }
   }
 }
