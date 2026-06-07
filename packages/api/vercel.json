@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm exec prisma generate && mkdir -p public/api && echo \"exports.default=function(r,s){s.statusCode=200;s.setHeader('Content-Type','application/json');s.end(JSON.stringify({ok:true}))}\" > public/api/ping.js && echo \"exports.default=function(r,s){s.statusCode=500;s.end('index placeholder')}\" > public/api/index.js",
+  "buildCommand": "bash build.sh",
   "outputDirectory": "public",
   "rewrites": [
     { "source": "/(.*)", "destination": "/api/index" }
