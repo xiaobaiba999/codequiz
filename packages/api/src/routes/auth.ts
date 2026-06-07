@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { prisma } from '../index';
+import { prisma, redis } from '../app';
 import { success, fail } from '../utils/response';
 import { createError } from '../middleware/errorHandler';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
@@ -32,17 +32,15 @@ router.post('/register', async (req, res, next) => {
     const accessToken = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET || 'default-secret',
-      { expiresIn: process.env.JWT_EXPIRES_IN || '15m' },
+      { expiresIn: '15m' as any },
     );
 
     const refreshToken = jwt.sign(
       { userId: user.id },
       process.env.JWT_REFRESH_SECRET || 'default-refresh-secret',
-      { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d' },
+      { expiresIn: '7d' as any },
     );
 
-    // 存储 refresh token 到 Redis
-    const { redis } = await import('../index');
     await redis.set(`refresh:${user.id}`, refreshToken, 'EX', 7 * 24 * 3600);
 
     success(res, {
@@ -79,16 +77,15 @@ router.post('/login', async (req, res, next) => {
     const accessToken = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET || 'default-secret',
-      { expiresIn: process.env.JWT_EXPIRES_IN || '15m' },
+      { expiresIn: '15m' as any },
     );
 
     const refreshToken = jwt.sign(
       { userId: user.id },
       process.env.JWT_REFRESH_SECRET || 'default-refresh-secret',
-      { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d' },
+      { expiresIn: '7d' as any },
     );
 
-    const { redis } = await import('../index');
     await redis.set(`refresh:${user.id}`, refreshToken, 'EX', 7 * 24 * 3600);
 
     success(res, {
@@ -114,7 +111,6 @@ router.post('/refresh', async (req, res, next) => {
 
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || 'default-refresh-secret') as { userId: string };
 
-    const { redis } = await import('../index');
     const stored = await redis.get(`refresh:${decoded.userId}`);
     if (stored !== refreshToken) {
       return next(createError(401, 'Refresh token 无效'));
@@ -123,7 +119,7 @@ router.post('/refresh', async (req, res, next) => {
     const accessToken = jwt.sign(
       { userId: decoded.userId },
       process.env.JWT_SECRET || 'default-secret',
-      { expiresIn: process.env.JWT_EXPIRES_IN || '15m' },
+      { expiresIn: '15m' as any },
     );
 
     success(res, { accessToken }, 'Token 刷新成功');
@@ -137,7 +133,6 @@ router.post('/refresh', async (req, res, next) => {
  */
 router.post('/logout', authMiddleware, async (req: AuthRequest, res, next) => {
   try {
-    const { redis } = await import('../index');
     await redis.del(`refresh:${req.userId}`);
     success(res, null, '退出登录成功');
   } catch (err) {

@@ -1,8 +1,13 @@
 {
   "framework": null,
-  "buildCommand": "npm install && npx prisma generate",
-  "installCommand": "npm install",
+  "buildCommand": null,
+  "installCommand": "npm install && npx prisma generate",
   "outputDirectory": ".",
+  "functions": {
+    "api/index.ts": {
+      "runtime": "@vercel/node@3"
+    }
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/api" }
   ]

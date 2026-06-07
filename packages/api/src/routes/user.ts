@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
-import { prisma } from '../index';
+import { prisma } from '../app';
 import { success } from '../utils/response';
 import { createError } from '../middleware/errorHandler';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
