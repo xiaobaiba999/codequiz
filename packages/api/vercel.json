@@ -1,5 +1,4 @@
 {
-  "installCommand": "pnpm install",
   "buildCommand": "pnpm exec prisma generate",
   "rewrites": [
     { "source": "/(.*)", "destination": "/api/index" }
