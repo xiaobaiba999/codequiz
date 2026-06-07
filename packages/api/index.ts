@@ -1,11 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-// 延迟加载 Express app，避免冷启动时连接失败
 let app: any = null;
 
 async function getApp() {
   if (app) return app;
-  const { createApp } = await import('../src/app');
+  const { createApp } = await import('./src/app');
   app = createApp();
   return app;
 }
