@@ -1,0 +1,9 @@
+{
+  "build": {
+    "type": "node",
+    "command": "cd packages/api && npm install && npx prisma generate && npm run build:prod"
+  },
+  "start": {
+    "command": "cd packages/api && npx prisma migrate deploy && npm run start:prod"
+  }
+}
