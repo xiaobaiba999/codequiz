@@ -2,8 +2,8 @@
   "buildCommand": "bash build.sh",
   "outputDirectory": "public",
   "rewrites": [
-    { "source": "/api/((?!test$|ping$).*)", "destination": "/api/index" },
-    { "source": "/(.*)", "destination": "/api/index" }
+    { "source": "/api/((?!test$|ping$).*)", "destination": "/api/test" },
+    { "source": "/(.*)", "destination": "/api/test" }
   ],
   "functions": {
     "api/index.ts": {
