@@ -10,8 +10,11 @@ import {
   message,
   Tabs,
   Typography,
+  Modal,
+  Input,
+  Select,
 } from 'antd';
-import { UploadOutlined, InboxOutlined, DownloadOutlined } from '@ant-design/icons';
+import { UploadOutlined, InboxOutlined, DownloadOutlined, FileWordOutlined, FileTextOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { questionApi } from '../api';
@@ -91,6 +94,10 @@ const ImportQuestions: React.FC = () => {
   const [errors, setErrors] = useState<string[]>([]);
   const [importing, setImporting] = useState(false);
   const [pastedJson, setPastedJson] = useState('');
+  const [docParsing, setDocParsing] = useState(false);
+  const [warnings, setWarnings] = useState<string[]>([]);
+  const [editingQuestion, setEditingQuestion] = useState<any>(null);
+  const [editIndex, setEditIndex] = useState(-1);
 
   const parseAndValidate = (data: any[]) => {
     const errs: string[] = [];
@@ -130,6 +137,66 @@ const ImportQuestions: React.FC = () => {
     } catch {
       message.error('JSON 格式错误，请检查内容');
     }
+  };
+
+  const handleDocUpload: UploadProps['beforeUpload'] = async (file) => {
+    setDocParsing(true);
+    setWarnings([]);
+    try {
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve) => {
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result.split(',')[1]); // 去掉 data:xxx;base64, 前缀
+        };
+        reader.readAsDataURL(file);
+      });
+
+      const res = await questionApi.importFile({
+        fileBase64: base64,
+        fileName: file.name,
+      });
+
+      if (res.data.success) {
+        const parsed = res.data.data.questions;
+        setQuestions(parsed);
+        if (res.data.data.warnings) setWarnings(res.data.data.warnings);
+        // 验证题目格式
+        const errs: string[] = [];
+        parsed.forEach((q: any, i: number) => {
+          const err = validateQuestion(q, i);
+          if (err) errs.push(err);
+        });
+        setErrors(errs);
+        message.success(`智能识别 ${parsed.length} 道题目`);
+      }
+    } catch (err: any) {
+      message.error(err.response?.data?.message || '文档解析失败');
+    } finally {
+      setDocParsing(false);
+    }
+    return false;
+  };
+
+  const handleEditQuestion = (index: number) => {
+    setEditIndex(index);
+    setEditingQuestion({ ...questions![index] });
+  };
+
+  const handleSaveEdit = () => {
+    if (editIndex < 0 || !questions) return;
+    const updated = [...questions];
+    updated[editIndex] = editingQuestion;
+    setQuestions(updated);
+    // 重新验证
+    const errs: string[] = [];
+    updated.forEach((q, i) => {
+      const err = validateQuestion(q, i);
+      if (err) errs.push(err);
+    });
+    setErrors(errs);
+    setEditIndex(-1);
+    setEditingQuestion(null);
   };
 
   const handleImport = async () => {
@@ -195,8 +262,39 @@ const ImportQuestions: React.FC = () => {
       <Tabs
         items={[
           {
-            key: 'upload',
-            label: '📁 上传文件',
+            key: 'doc',
+            label: <span><FileWordOutlined /> Word/文档 导入</span>,
+            children: (
+              <div>
+                <Alert
+                  type="info"
+                  message="智能解析"
+                  description="支持 .docx 和 .txt 格式。系统会自动识别题号、题型、选项、答案和解析，无需手动整理格式。"
+                  style={{ marginBottom: 16 }}
+                />
+                <Dragger
+                  accept=".docx,.txt,.md"
+                  maxCount={1}
+                  beforeUpload={handleDocUpload}
+                  showUploadList={false}
+                  disabled={docParsing}
+                >
+                  <p className="ant-upload-drag-icon">
+                    <FileTextOutlined style={{ fontSize: 48, color: '#1677ff' }} />
+                  </p>
+                  <p className="ant-upload-text">
+                    {docParsing ? '正在智能解析中…' : '点击或拖拽 Word 文档到此区域'}
+                  </p>
+                  <p className="ant-upload-hint">
+                    支持 .docx、.txt、.md 格式
+                  </p>
+                </Dragger>
+              </div>
+            ),
+          },
+          {
+            key: 'json-upload',
+            label: '📁 JSON 文件',
             children: (
               <Dragger
                 accept=".json"
@@ -234,19 +332,34 @@ const ImportQuestions: React.FC = () => {
         ]}
       />
 
+      {warnings.length > 0 && (
+        <Alert
+          type="warning"
+          message={`${warnings.length} 个提示`}
+          description={warnings.slice(0, 10).map((w, i) => <div key={i}>• {w}</div>)}
+          style={{ marginTop: 16 }}
+          closable
+        />
+      )}
+
       {errors.length > 0 && (
         <Alert
           type="error"
-          message={`发现 ${errors.length} 个错误`}
+          message={`发现 ${errors.length} 个格式问题`}
           description={errors.slice(0, 10).map((e, i) => <div key={i}>• {e}</div>)}
           style={{ marginTop: 16 }}
         />
       )}
 
       {questions && questions.length > 0 && (
-        <Card title={`题目预览 (${questions.length} 题)`} style={{ marginTop: 16 }}>
+        <Card title={`题目预览 (${questions.length} 题) — 点击行可编辑`} style={{ marginTop: 16 }}>
           <Table
-            columns={columns}
+            columns={[...columns, {
+              title: '操作', width: 60,
+              render: (_: any, __: any, i: number) => (
+                <Button size="small" onClick={() => handleEditQuestion(i)}>编辑</Button>
+              ),
+            }]}
             dataSource={questions}
             rowKey={(_, i) => String(i)}
             pagination={false}
@@ -265,6 +378,68 @@ const ImportQuestions: React.FC = () => {
           </Button>
         </Card>
       )}
+
+      <Modal
+        title={`编辑题目 #${editIndex + 1}`}
+        open={editIndex >= 0}
+        onOk={handleSaveEdit}
+        onCancel={() => { setEditIndex(-1); setEditingQuestion(null); }}
+        width={700}
+      >
+        {editingQuestion && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div>
+              <Text strong>题型</Text>
+              <Select
+                value={editingQuestion.type}
+                onChange={(v) => setEditingQuestion({ ...editingQuestion, type: v })}
+                style={{ width: '100%' }}
+                options={[
+                  { value: 'SINGLE_CHOICE', label: '单选题' },
+                  { value: 'MULTI_CHOICE', label: '多选题' },
+                  { value: 'FILL_BLANK', label: '填空题' },
+                  { value: 'PROGRAMMING', label: '编程题' },
+                ]}
+              />
+            </div>
+            <div>
+              <Text strong>标题</Text>
+              <Input value={editingQuestion.title} onChange={(e) => setEditingQuestion({ ...editingQuestion, title: e.target.value })} />
+            </div>
+            <div>
+              <Text strong>内容</Text>
+              <TextArea rows={3} value={editingQuestion.content} onChange={(e) => setEditingQuestion({ ...editingQuestion, content: e.target.value })} />
+            </div>
+            <div>
+              <Text strong>难度</Text>
+              <Select
+                value={editingQuestion.difficulty}
+                onChange={(v) => setEditingQuestion({ ...editingQuestion, difficulty: v })}
+                options={[
+                  { value: 'EASY', label: '简单' },
+                  { value: 'MEDIUM', label: '中等' },
+                  { value: 'HARD', label: '困难' },
+                ]}
+              />
+            </div>
+            <div>
+              <Text strong>标签（逗号分隔）</Text>
+              <Input
+                value={Array.isArray(editingQuestion.tags) ? editingQuestion.tags.join(', ') : editingQuestion.tags}
+                onChange={(e) => setEditingQuestion({ ...editingQuestion, tags: e.target.value.split(/[,，]/).map((t: string) => t.trim()).filter(Boolean) })}
+              />
+            </div>
+            <div>
+              <Text strong>答案</Text>
+              <Input value={editingQuestion.answer} onChange={(e) => setEditingQuestion({ ...editingQuestion, answer: e.target.value })} />
+            </div>
+            <div>
+              <Text strong>解析</Text>
+              <TextArea rows={3} value={editingQuestion.analysis} onChange={(e) => setEditingQuestion({ ...editingQuestion, analysis: e.target.value })} />
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

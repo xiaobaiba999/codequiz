@@ -132,6 +132,62 @@ router.delete('/:id', async (req, res, next) => {
 });
 
 /**
+ * POST /api/questions/import-file
+ * 从文件导入（支持 .docx、.txt，base64 格式）
+ */
+router.post('/import-file', async (req, res, next) => {
+  try {
+    const { fileBase64, fileName } = req.body;
+
+    if (!fileBase64 || !fileName) {
+      return next(createError(400, '请提供文件内容 (fileBase64) 和文件名 (fileName)'));
+    }
+
+    // 解码 base64
+    const buffer = Buffer.from(fileBase64, 'base64');
+    let rawText = '';
+
+    const ext = fileName.toLowerCase().split('.').pop();
+
+    if (ext === 'docx') {
+      const mammoth = await import('mammoth');
+      const result = await mammoth.extractRawText({ buffer });
+      rawText = result.value;
+      if (result.messages.length > 0) {
+        console.log('Mammoth warnings:', result.messages);
+      }
+    } else if (ext === 'txt' || ext === 'md') {
+      rawText = buffer.toString('utf-8');
+    } else if (ext === 'pdf') {
+      return next(createError(400, '暂不支持 PDF 直接导入，请先用 Word 打开 PDF 另存为 .docx 格式后再导入'));
+    } else {
+      return next(createError(400, `不支持的文件格式: .${ext}，请使用 .docx、.txt 或 .md 文件`));
+    }
+
+    if (!rawText || rawText.trim().length < 5) {
+      return next(createError(400, '文件内容为空或无法解析'));
+    }
+
+    // 智能解析
+    const { parseQuestionsFromText } = await import('../services/questionParser');
+    const { questions, warnings } = parseQuestionsFromText(rawText);
+
+    if (questions.length === 0) {
+      return next(createError(400, '未能从文件中识别出题目，请检查文件格式'));
+    }
+
+    success(res, {
+      questions,
+      total: questions.length,
+      warnings: warnings.length > 0 ? warnings : undefined,
+      rawTextPreview: rawText.slice(0, 500),
+    }, `识别到 ${questions.length} 道题目`);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
  * POST /api/questions/batch
  * 批量导入题目
  */

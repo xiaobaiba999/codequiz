@@ -15,6 +15,8 @@ export const questionApi = {
   get: (id: string) => apiClient.get(`/questions/${id}`),
   create: (data: any) => apiClient.post('/questions', data),
   batchImport: (data: any) => apiClient.post('/questions/batch', data),
+  importFile: (data: { fileBase64: string; fileName: string }) =>
+    apiClient.post('/questions/import-file', data),
 };
 
 // 答题
