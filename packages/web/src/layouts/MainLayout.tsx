@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Menu, Button, Switch, Drawer } from 'antd';
+import { Layout, Menu, Button, Drawer, Segmented, Tooltip } from 'antd';
 import {
   BookOutlined,
   ThunderboltOutlined,
@@ -9,8 +9,9 @@ import {
   BarChartOutlined,
   UserOutlined,
   MenuOutlined,
-  BulbOutlined,
-  BulbFilled,
+  SunOutlined,
+  MoonOutlined,
+  EyeOutlined,
   ImportOutlined,
 } from '@ant-design/icons';
 import { useThemeStore } from '../store/theme';
@@ -33,7 +34,8 @@ const menuItems = [
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isDark, toggleTheme } = useThemeStore();
+  const { mode, setTheme } = useThemeStore();
+  const isDark = mode === 'dark' || mode === 'eyecare';
   const { user, logout } = useAuthStore();
   const [collapsed, setCollapsed] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -80,11 +82,15 @@ const MainLayout: React.FC = () => {
           </h2>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Switch
-            checked={isDark}
-            onChange={toggleTheme}
-            checkedChildren={<BulbFilled />}
-            unCheckedChildren={<BulbOutlined />}
+          <Segmented
+            size="small"
+            value={mode}
+            onChange={(v) => setTheme(v as any)}
+            options={[
+              { value: 'light', icon: <SunOutlined />, label: <Tooltip title="浅色模式">☀️</Tooltip> },
+              { value: 'eyecare', icon: <EyeOutlined />, label: <Tooltip title="护眼模式">🌿</Tooltip> },
+              { value: 'dark', icon: <MoonOutlined />, label: <Tooltip title="暗夜模式">🌙</Tooltip> },
+            ]}
           />
           <span style={{ color: isDark ? '#fff' : undefined }}>{user?.nickname || '用户'}</span>
           <Button type="link" onClick={handleLogout}>退出</Button>

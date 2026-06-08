@@ -9,7 +9,8 @@ import { useThemeStore } from '../store/theme';
 const QuestionDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isDark } = useThemeStore();
+  const { mode } = useThemeStore();
+  const isDark = mode === 'dark' || mode === 'eyecare';
   const [question, setQuestion] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [userAnswer, setUserAnswer] = useState<string>('');

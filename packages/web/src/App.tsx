@@ -13,6 +13,7 @@ import ImportQuestions from './pages/ImportQuestions';
 import Stats from './pages/Stats';
 import Profile from './pages/Profile';
 import { useAuthStore } from './store/auth';
+import UpdateNotification from './components/UpdateNotification';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { token } = useAuthStore();
@@ -22,7 +23,9 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
 const App: React.FC = () => {
   return (
-    <Routes>
+    <>
+      <UpdateNotification />
+      <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route
@@ -45,6 +48,7 @@ const App: React.FC = () => {
         <Route path="import" element={<ImportQuestions />} />
       </Route>
     </Routes>
+    </>
   );
 };
 
