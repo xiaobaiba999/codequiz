@@ -27,8 +27,8 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#f0f2f5' }}>
-      <Card title="CodeQuiz 注册" style={{ width: 400 }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#f0f2f5', padding: '0 16px' }}>
+      <Card title="CodeQuiz 注册" className="responsive-card" style={{ width: 400 }}>
         <Form onFinish={onFinish}>
           <Form.Item name="nickname" rules={[{ required: true, message: '请输入昵称' }]}>
             <Input prefix={<UserOutlined />} placeholder="昵称" />

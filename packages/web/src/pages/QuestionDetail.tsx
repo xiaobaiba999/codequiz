@@ -115,7 +115,7 @@ const QuestionDetail: React.FC = () => {
           </Space>
         }
         extra={
-          <Space>
+          <Space className="mobile-btn-wrap">
             <Button icon={isFavorited ? <HeartFilled /> : <HeartOutlined />} onClick={toggleFavorite} type={isFavorited ? 'primary' : 'default'}>
               {isFavorited ? '已收藏' : '收藏'}
             </Button>
@@ -163,6 +163,7 @@ const QuestionDetail: React.FC = () => {
           <div style={{ border: '1px solid #d9d9d9', borderRadius: 4, overflow: 'hidden' }}>
             <Editor
               height="300px"
+              className="mobile-editor-short"
               language={question.language === 'python' ? 'python' : 'javascript'}
               theme={isDark ? 'vs-dark' : 'light'}
               value={userAnswer || question.starterCode || ''}
@@ -202,7 +203,7 @@ const QuestionDetail: React.FC = () => {
       </Card>
 
       {/* 讨论区 */}
-      <Card title="讨论" style={{ marginTop: 16 }}>
+      <Card title="讨论" style={{ marginTop: 16 }} size="small" className="mobile-discussion">
         <List
           dataSource={comments}
           renderItem={(item: any) => (

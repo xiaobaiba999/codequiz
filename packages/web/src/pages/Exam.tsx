@@ -77,7 +77,7 @@ const Exam: React.FC = () => {
     return (
       <div>
         <h2>模拟考试</h2>
-        <Card style={{ maxWidth: 400 }}>
+        <Card style={{ maxWidth: 400 }} className="mobile-full-width">
           <div style={{ marginBottom: 16 }}>
             <h4>题目数量</h4>
             <InputNumber min={5} max={50} value={questionCount} onChange={(v) => setQuestionCount(v || 10)} />
@@ -104,11 +104,11 @@ const Exam: React.FC = () => {
         </div>
         <Progress percent={((currentIdx + 1) / examData.questionCount) * 100} showInfo={false} />
 
-        <Card title={currentQ.title} style={{ marginTop: 16 }}>
+        <Card title={currentQ.title} style={{ marginTop: 16 }} className="mobile-full-width">
           <div style={{ whiteSpace: 'pre-wrap', marginBottom: 16 }}>{currentQ.content}</div>
           {currentQ.type === 'SINGLE_CHOICE' && (
             <Radio.Group value={answers[currentQ.id]} onChange={(e: any) => setAnswers({ ...answers, [currentQ.id]: e.target.value })}>
-              <Space direction="vertical">
+              <Space direction="vertical" className="mobile-btn-wrap">
                 {currentQ.options?.map((opt: any) => (
                   <Radio key={opt.label} value={opt.label}>{opt.label}. {opt.value}</Radio>
                 ))}
@@ -117,7 +117,7 @@ const Exam: React.FC = () => {
           )}
           {currentQ.type === 'MULTI_CHOICE' && (
             <Radio.Group value={answers[currentQ.id]} onChange={(e: any) => setAnswers({ ...answers, [currentQ.id]: e.target.value })}>
-              <Space direction="vertical">
+              <Space direction="vertical" className="mobile-btn-wrap">
                 {currentQ.options?.map((opt: any) => (
                   <Radio key={opt.label} value={opt.label}>{opt.label}. {opt.value}</Radio>
                 ))}

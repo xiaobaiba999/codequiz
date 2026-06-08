@@ -119,7 +119,7 @@ const Profile: React.FC = () => {
         </Card>
       )}
 
-      <Card style={{ marginBottom: 16, maxWidth: 600 }}>
+      <Card style={{ marginBottom: 16, maxWidth: 600 }} className="mobile-full-width">
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
           <Avatar size={80} icon={<UserOutlined />} src={user?.avatar} />
         </div>
@@ -148,13 +148,14 @@ const Profile: React.FC = () => {
       </Card>
 
       {/* 主题设置 */}
-      <Card title="外观设置" style={{ marginBottom: 16, maxWidth: 600 }}>
+      <Card title="外观设置" style={{ marginBottom: 16, maxWidth: 600 }} className="mobile-full-width">
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           {(Object.entries(themeLabels) as [ThemeMode, typeof themeLabels['light']][]).map(([key, val]) => (
             <Card
               key={key}
               size="small"
               hoverable
+              className="mobile-theme-card"
               style={{
                 width: 160,
                 textAlign: 'center',
@@ -175,7 +176,7 @@ const Profile: React.FC = () => {
       </Card>
 
       {/* 版本信息 */}
-      <Card title="关于" style={{ maxWidth: 600 }}>
+      <Card title="关于" style={{ maxWidth: 600 }} className="mobile-full-width">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Space>

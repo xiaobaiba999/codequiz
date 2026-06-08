@@ -31,6 +31,13 @@ const menuItems = [
   { key: '/import', icon: <ImportOutlined />, label: '导入题库' },
 ];
 
+const bottomTabItems = [
+  { key: '/questions', icon: <BookOutlined />, label: '题库' },
+  { key: '/practice', icon: <ThunderboltOutlined />, label: '刷题' },
+  { key: '/stats', icon: <BarChartOutlined />, label: '统计' },
+  { key: '/profile', icon: <UserOutlined />, label: '我的' },
+];
+
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -68,6 +75,7 @@ const MainLayout: React.FC = () => {
           top: 0,
           zIndex: 100,
         }}
+        className="main-header"
       >
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <Button
@@ -81,7 +89,7 @@ const MainLayout: React.FC = () => {
             CodeQuiz
           </h2>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }} className="header-right">
           <Segmented
             size="small"
             value={mode}
@@ -92,7 +100,7 @@ const MainLayout: React.FC = () => {
               { value: 'dark', icon: <MoonOutlined />, label: <Tooltip title="暗夜模式">🌙</Tooltip> },
             ]}
           />
-          <span style={{ color: isDark ? '#fff' : undefined }}>{user?.nickname || '用户'}</span>
+          <span style={{ color: isDark ? '#fff' : undefined }} className="header-username">{user?.nickname || '用户'}</span>
           <Button type="link" onClick={handleLogout}>退出</Button>
         </div>
       </Header>
@@ -116,8 +124,8 @@ const MainLayout: React.FC = () => {
           />
         </Sider>
 
-        <Layout style={{ padding: '24px' }}>
-          <Content style={{ padding: 24, margin: 0, minHeight: 280, borderRadius: 8 }}>
+        <Layout style={{ padding: '24px' }} className="main-content-layout">
+          <Content style={{ padding: 24, margin: 0, minHeight: 280, borderRadius: 8 }} className="main-content">
             <Outlet />
           </Content>
         </Layout>
@@ -138,10 +146,29 @@ const MainLayout: React.FC = () => {
         />
       </Drawer>
 
+      {/* 移动端底部导航栏 */}
+      <div className="mobile-bottom-tab">
+        {bottomTabItems.map((item) => (
+          <div
+            key={item.key}
+            className={`mobile-tab-item ${selectedKey === item.key ? 'active' : ''}`}
+            onClick={() => navigate(item.key)}
+          >
+            <span className="mobile-tab-icon">{item.icon}</span>
+            <span className="mobile-tab-label">{item.label}</span>
+          </div>
+        ))}
+      </div>
+
       <style>{`
         @media (max-width: 768px) {
           .desktop-sider { display: none !important; }
           .mobile-menu-btn { display: inline-flex !important; }
+          .main-header { padding: 0 12px !important; }
+          .header-username { display: none !important; }
+          .header-right .ant-segmented { display: none !important; }
+          .main-content-layout { padding: 12px !important; }
+          .main-content { padding: 12px !important; }
         }
       `}</style>
     </Layout>

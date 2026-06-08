@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Input, Select, Tag, Button, Space } from 'antd';
+import { Table, Input, Select, Tag, Button, Space, Card } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { questionApi } from '../api';
 
@@ -91,7 +91,7 @@ const QuestionList: React.FC = () => {
   return (
     <div>
       <h2>题库</h2>
-      <Space style={{ marginBottom: 16 }} wrap>
+      <Space style={{ marginBottom: 16 }} wrap className="mobile-filter-area">
         <Search
           placeholder="搜索题目"
           allowClear
@@ -117,13 +117,43 @@ const QuestionList: React.FC = () => {
           ]}
         />
       </Space>
-      <Table
-        columns={columns}
-        dataSource={data}
-        rowKey="id"
-        loading={loading}
-        pagination={{ current: page, total, pageSize: 20, onChange: setPage }}
-      />
+
+      {/* 桌面端表格视图 */}
+      <div className="desktop-table-view">
+        <Table
+          columns={columns}
+          dataSource={data}
+          rowKey="id"
+          loading={loading}
+          pagination={{ current: page, total, pageSize: 20, onChange: setPage }}
+        />
+      </div>
+
+      {/* 移动端卡片列表视图 */}
+      <div className="mobile-card-list">
+        {data.map((item) => (
+          <Card
+            key={item.id}
+            className="mobile-question-card"
+            onClick={() => navigate(`/questions/${item.id}`)}
+            size="small"
+          >
+            <div className="card-title">{item.title}</div>
+            <div className="card-tags">
+              <Tag>{typeLabels[item.type] || item.type}</Tag>
+              <Tag color={difficultyColors[item.difficulty]}>{item.difficulty}</Tag>
+              {item.completed ? <Tag color="green">已完成</Tag> : <Tag>未做</Tag>}
+            </div>
+          </Card>
+        ))}
+        <div style={{ textAlign: 'center', marginTop: 16 }}>
+          <Space>
+            <Button disabled={page <= 1} onClick={() => setPage(page - 1)}>上一页</Button>
+            <span>{page} / {Math.ceil(total / 20) || 1}</span>
+            <Button disabled={page >= Math.ceil(total / 20)} onClick={() => setPage(page + 1)}>下一页</Button>
+          </Space>
+        </div>
+      </div>
     </div>
   );
 };

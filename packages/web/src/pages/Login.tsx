@@ -27,8 +27,8 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#f0f2f5' }}>
-      <Card title="CodeQuiz 登录" style={{ width: 400 }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#f0f2f5', padding: '0 16px' }}>
+      <Card title="CodeQuiz 登录" className="responsive-card" style={{ width: 400 }}>
         <Form onFinish={onFinish}>
           <Form.Item name="email" rules={[{ required: true, message: '请输入邮箱' }, { type: 'email', message: '请输入有效邮箱' }]}>
             <Input prefix={<MailOutlined />} placeholder="邮箱" />

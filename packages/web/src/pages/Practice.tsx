@@ -38,11 +38,11 @@ const Practice: React.FC = () => {
   return (
     <div>
       <h2>刷题模式</h2>
-      <Card style={{ maxWidth: 500 }}>
+      <Card style={{ maxWidth: 500 }} className="mobile-full-width">
         <div style={{ marginBottom: 24 }}>
           <h4>练习模式</h4>
           <Radio.Group value={mode} onChange={(e) => setMode(e.target.value)}>
-            <Space>
+            <Space wrap>
               <Radio.Button value="sequential">顺序练习</Radio.Button>
               <Radio.Button value="random">随机练习</Radio.Button>
             </Space>

@@ -353,19 +353,21 @@ const ImportQuestions: React.FC = () => {
 
       {questions && questions.length > 0 && (
         <Card title={`题目预览 (${questions.length} 题) — 点击行可编辑`} style={{ marginTop: 16 }}>
-          <Table
-            columns={[...columns, {
-              title: '操作', width: 60,
-              render: (_: any, __: any, i: number) => (
-                <Button size="small" onClick={() => handleEditQuestion(i)}>编辑</Button>
-              ),
-            }]}
-            dataSource={questions}
-            rowKey={(_, i) => String(i)}
-            pagination={false}
-            size="small"
-            scroll={{ y: 400 }}
-          />
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <Table
+              columns={[...columns, {
+                title: '操作', width: 60,
+                render: (_: any, __: any, i: number) => (
+                  <Button size="small" onClick={() => handleEditQuestion(i)}>编辑</Button>
+                ),
+              }]}
+              dataSource={questions}
+              rowKey={(_, i) => String(i)}
+              pagination={false}
+              size="small"
+              scroll={{ y: 400 }}
+            />
+          </div>
           <Button
             type="primary"
             size="large"
@@ -385,6 +387,7 @@ const ImportQuestions: React.FC = () => {
         onOk={handleSaveEdit}
         onCancel={() => { setEditIndex(-1); setEditingQuestion(null); }}
         width={700}
+        className="mobile-fullscreen-modal"
       >
         {editingQuestion && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
